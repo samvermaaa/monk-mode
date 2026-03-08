@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          anonymous_mode: boolean
+          created_at: string
+          id: string
+          updated_at: string
+          username: string | null
+        }
+        Insert: {
+          anonymous_mode?: boolean
+          created_at?: string
+          id: string
+          updated_at?: string
+          username?: string | null
+        }
+        Update: {
+          anonymous_mode?: boolean
+          created_at?: string
+          id?: string
+          updated_at?: string
+          username?: string | null
+        }
+        Relationships: []
+      }
+      relapse_logs: {
+        Row: {
+          created_at: string
+          emotion: string | null
+          id: string
+          relapse_date: string
+          trigger: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emotion?: string | null
+          id?: string
+          relapse_date?: string
+          trigger?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emotion?: string | null
+          id?: string
+          relapse_date?: string
+          trigger?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      streaks: {
+        Row: {
+          completed_tasks: string[]
+          created_at: string
+          current_streak: number
+          daily_check_in: string | null
+          id: string
+          level: number
+          longest_streak: number
+          start_date: string
+          total_relapses: number
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          completed_tasks?: string[]
+          created_at?: string
+          current_streak?: number
+          daily_check_in?: string | null
+          id?: string
+          level?: number
+          longest_streak?: number
+          start_date?: string
+          total_relapses?: number
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          completed_tasks?: string[]
+          created_at?: string
+          current_streak?: number
+          daily_check_in?: string | null
+          id?: string
+          level?: number
+          longest_streak?: number
+          start_date?: string
+          total_relapses?: number
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
