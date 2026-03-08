@@ -1,20 +1,30 @@
-import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Flame, Trophy, BarChart3, MessageCircle, Lock } from 'lucide-react';
 import { MILESTONES } from '@/lib/store';
+import { useUserStats } from '@/lib/store';
+import BottomNav from '@/components/BottomNav';
 
 export default function Achievements() {
-  const navigate = useNavigate();
-  const currentStreak = 12; // mock
+  const { stats, loading } = useUserStats();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
+        <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-dark pb-24">
       <div className="container py-6">
-        <h1 className="text-2xl font-bold mb-6">Achievements</h1>
+        <h1 className="text-2xl font-bold mb-2">Achievements</h1>
+        <p className="text-sm text-muted-foreground mb-6">
+          {MILESTONES.filter(m => stats.currentStreak >= m.days).length} / {MILESTONES.length} unlocked
+        </p>
 
         <div className="grid grid-cols-2 gap-4">
           {MILESTONES.map((m, i) => {
-            const unlocked = currentStreak >= m.days;
+            const unlocked = stats.currentStreak >= m.days;
             return (
               <motion.div
                 key={m.days}
@@ -36,28 +46,7 @@ export default function Achievements() {
         </div>
       </div>
 
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-border">
-        <div className="container flex justify-around py-3">
-          {[
-            { icon: Flame, label: 'Dashboard', path: '/dashboard' },
-            { icon: Trophy, label: 'Badges', path: '/achievements' },
-            { icon: BarChart3, label: 'Analytics', path: '/analytics' },
-            { icon: MessageCircle, label: 'AI Coach', path: '/coach' },
-          ].map(item => (
-            <button
-              key={item.label}
-              onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-1 text-xs ${
-                item.path === '/achievements' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 }
