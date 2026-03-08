@@ -25,9 +25,14 @@ export default function Landing() {
           </div>
           <span className="text-lg font-bold text-foreground">MonkMode</span>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
-          Enter App
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>
+            Sign In
+          </Button>
+          <Button size="sm" onClick={() => navigate('/auth')}>
+            Sign Up
+          </Button>
+        </div>
       </nav>
 
       {/* Hero */}
