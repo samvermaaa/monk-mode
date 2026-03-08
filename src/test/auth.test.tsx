@@ -24,11 +24,11 @@ describe('ProtectedRoute', () => {
 
   it('shows loading spinner when auth is loading', () => {
     mockUseAuth.mockReturnValue({ user: null, loading: true, signOut: vi.fn() });
-    renderWithRouter(
+    const { container, queryByText } = renderWithRouter(
       <ProtectedRoute><div>Protected Content</div></ProtectedRoute>
     );
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
-    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+    expect(queryByText('Protected Content')).not.toBeInTheDocument();
+    expect(container.querySelector('.animate-spin')).toBeInTheDocument();
   });
 
   it('renders children when user is authenticated', () => {
@@ -37,18 +37,18 @@ describe('ProtectedRoute', () => {
       loading: false,
       signOut: vi.fn(),
     });
-    renderWithRouter(
+    const { getByText } = renderWithRouter(
       <ProtectedRoute><div>Protected Content</div></ProtectedRoute>
     );
-    expect(screen.getByText('Protected Content')).toBeInTheDocument();
+    expect(getByText('Protected Content')).toBeInTheDocument();
   });
 
   it('redirects to /auth when user is not authenticated', () => {
     mockUseAuth.mockReturnValue({ user: null, loading: false, signOut: vi.fn() });
-    renderWithRouter(
+    const { queryByText } = renderWithRouter(
       <ProtectedRoute><div>Protected Content</div></ProtectedRoute>
     );
-    expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+    expect(queryByText('Protected Content')).not.toBeInTheDocument();
   });
 });
 
