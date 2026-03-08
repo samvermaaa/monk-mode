@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 
 interface DailyCheckInProps {
@@ -11,9 +12,9 @@ const moods = [
   { key: 'struggling' as const, emoji: '😓', label: 'Struggling' },
 ];
 
-export default function DailyCheckIn({ currentMood, onSelect }: DailyCheckInProps) {
+const DailyCheckIn = forwardRef<HTMLDivElement, DailyCheckInProps>(({ currentMood, onSelect }, ref) => {
   return (
-    <div className="bg-gradient-card rounded-2xl border border-border p-6">
+    <div ref={ref} className="bg-gradient-card rounded-2xl border border-border p-6">
       <h3 className="font-semibold mb-1">Daily Check-In</h3>
       <p className="text-sm text-muted-foreground mb-4">How are you feeling today?</p>
       <div className="grid grid-cols-3 gap-3">
@@ -35,4 +36,7 @@ export default function DailyCheckIn({ currentMood, onSelect }: DailyCheckInProp
       </div>
     </div>
   );
-}
+});
+
+DailyCheckIn.displayName = 'DailyCheckIn';
+export default DailyCheckIn;

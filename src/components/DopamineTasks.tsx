@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { DOPAMINE_TASKS } from '@/lib/store';
@@ -7,9 +8,9 @@ interface DopamineTasksProps {
   onComplete: (taskId: string) => void;
 }
 
-export default function DopamineTasks({ completedTasks, onComplete }: DopamineTasksProps) {
+const DopamineTasks = forwardRef<HTMLDivElement, DopamineTasksProps>(({ completedTasks, onComplete }, ref) => {
   return (
-    <div className="bg-gradient-card rounded-2xl border border-border p-6">
+    <div ref={ref} className="bg-gradient-card rounded-2xl border border-border p-6">
       <h3 className="font-semibold mb-1">Dopamine Replacement</h3>
       <p className="text-sm text-muted-foreground mb-4">Complete tasks to earn XP</p>
       <div className="space-y-2">
@@ -39,4 +40,7 @@ export default function DopamineTasks({ completedTasks, onComplete }: DopamineTa
       </div>
     </div>
   );
-}
+});
+
+DopamineTasks.displayName = 'DopamineTasks';
+export default DopamineTasks;

@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Flame, Trophy, BarChart3, MessageCircle } from 'lucide-react';
 
@@ -8,12 +9,12 @@ const NAV_ITEMS = [
   { icon: MessageCircle, label: 'AI Coach', path: '/coach' },
 ];
 
-export default function BottomNav() {
+const BottomNav = forwardRef<HTMLElement>((_, ref) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-border z-40">
+    <nav ref={ref} className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-border z-40">
       <div className="container flex justify-around py-3">
         {NAV_ITEMS.map(item => (
           <button
@@ -31,4 +32,7 @@ export default function BottomNav() {
       </div>
     </nav>
   );
-}
+});
+
+BottomNav.displayName = 'BottomNav';
+export default BottomNav;
