@@ -25,9 +25,14 @@ export default function Landing() {
           </div>
           <span className="text-lg font-bold text-foreground">MonkMode</span>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate('/dashboard')}>
-          Enter App
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>
+            Sign In
+          </Button>
+          <Button size="sm" onClick={() => navigate('/auth')}>
+            Sign Up
+          </Button>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -46,10 +51,10 @@ export default function Landing() {
             to help you break free from compulsive habits and reclaim your discipline.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8 py-6 glow-primary" onClick={() => navigate('/dashboard')}>
+            <Button size="lg" className="text-lg px-8 py-6 glow-primary" onClick={() => navigate('/auth')}>
               Start Your Journey
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/dashboard')}>
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/auth')}>
               Learn More
             </Button>
           </div>
@@ -105,7 +110,7 @@ export default function Landing() {
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Join thousands of men who have taken control of their minds and lives.
           </p>
-          <Button size="lg" className="text-lg px-10 py-6" onClick={() => navigate('/dashboard')}>
+          <Button size="lg" className="text-lg px-10 py-6" onClick={() => navigate('/auth')}>
             Start Your Discipline Journey
           </Button>
         </div>
