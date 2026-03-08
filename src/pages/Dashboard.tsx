@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame } from 'lucide-react';
+import { Flame, User } from 'lucide-react';
 import StreakCard from '@/components/StreakCard';
 import UrgeButton from '@/components/UrgeButton';
 import DailyCheckIn from '@/components/DailyCheckIn';
