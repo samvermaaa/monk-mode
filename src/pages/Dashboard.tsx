@@ -8,11 +8,21 @@ import DopamineTasks from '@/components/DopamineTasks';
 import XPBar from '@/components/XPBar';
 import UrgeIntervention from '@/components/UrgeIntervention';
 import { useUserStats } from '@/lib/store';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { stats, resetStreak, completeTask, setDailyCheckIn } = useUserStats();
+  const { stats, loading, resetStreak, completeTask, setDailyCheckIn } = useUserStats();
+  const { signOut } = useAuth();
   const [showUrge, setShowUrge] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-dark flex items-center justify-center">
+        <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (showUrge) {
     return <UrgeIntervention onClose={() => setShowUrge(false)} />;
@@ -28,8 +38,11 @@ export default function Dashboard() {
           </div>
           <span className="text-lg font-bold">MonkMode</span>
         </div>
-        <button onClick={() => navigate('/')} className="text-muted-foreground hover:text-foreground">
-          <User className="h-5 w-5" />
+        <button
+          onClick={async () => { await signOut(); navigate('/'); }}
+          className="text-muted-foreground hover:text-foreground text-xs"
+        >
+          Sign Out
         </button>
       </div>
 
