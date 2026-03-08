@@ -20,12 +20,17 @@ describe('loginSchema', () => {
 
 describe('signupSchema', () => {
   it('accepts valid signup data', () => {
-    const result = signupSchema.safeParse({ email: 'user@test.com', password: 'StrongPass1!' });
+    const result = signupSchema.safeParse({ username: 'warrior', email: 'user@test.com', password: 'StrongPass1!' });
     expect(result.success).toBe(true);
   });
 
   it('rejects empty email', () => {
-    const result = signupSchema.safeParse({ email: '', password: 'StrongPass1!' });
+    const result = signupSchema.safeParse({ username: 'warrior', email: '', password: 'StrongPass1!' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects username with special characters', () => {
+    const result = signupSchema.safeParse({ username: 'war rior!', email: 'user@test.com', password: 'StrongPass1!' });
     expect(result.success).toBe(false);
   });
 });
@@ -36,8 +41,13 @@ describe('profileSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts empty username', () => {
-    const result = profileSchema.safeParse({ username: '' });
-    expect(result.success).toBe(true);
+  it('rejects too-short username', () => {
+    const result = profileSchema.safeParse({ username: 'a' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects username over 30 chars', () => {
+    const result = profileSchema.safeParse({ username: 'a'.repeat(31) });
+    expect(result.success).toBe(false);
   });
 });
