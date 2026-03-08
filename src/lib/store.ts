@@ -1,4 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 export interface UserStats {
   currentStreak: number;
@@ -9,55 +12,101 @@ export interface UserStats {
   level: number;
   dailyCheckIn: 'strong' | 'neutral' | 'struggling' | null;
   completedTasks: string[];
-  relapseLog: Array<{ date: string; trigger: string; emotion: string }>;
-  streakHistory: Array<{ date: string; streak: number }>;
 }
 
 const DEFAULT_STATS: UserStats = {
-  currentStreak: 12,
-  longestStreak: 34,
-  totalRelapses: 5,
-  startDate: '2026-02-24',
-  xp: 1250,
-  level: 7,
+  currentStreak: 0,
+  longestStreak: 0,
+  totalRelapses: 0,
+  startDate: new Date().toISOString().split('T')[0],
+  xp: 0,
+  level: 1,
   dailyCheckIn: null,
   completedTasks: [],
-  relapseLog: [
-    { date: '2026-02-20', trigger: 'boredom', emotion: 'stressed' },
-    { date: '2026-02-10', trigger: 'late night', emotion: 'lonely' },
-    { date: '2026-01-28', trigger: 'social media', emotion: 'anxious' },
-  ],
-  streakHistory: [
-    { date: '2026-01', streak: 5 },
-    { date: '2026-02', streak: 14 },
-    { date: '2026-03', streak: 12 },
-  ],
 };
 
 export function useUserStats() {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
+  const [loading, setLoading] = useState(true);
 
-  const resetStreak = useCallback(() => {
-    setStats(prev => ({
-      ...prev,
-      currentStreak: 0,
-      totalRelapses: prev.totalRelapses + 1,
-    }));
-  }, []);
+  // Fetch streak data from DB
+  useEffect(() => {
+    if (!user) return;
 
-  const completeTask = useCallback((taskId: string) => {
-    setStats(prev => ({
-      ...prev,
-      completedTasks: [...prev.completedTasks, taskId],
-      xp: prev.xp + 25,
-    }));
-  }, []);
+    const fetchStats = async () => {
+      const { data, error } = await supabase
+        .from('streaks')
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-  const setDailyCheckIn = useCallback((mood: 'strong' | 'neutral' | 'struggling') => {
+      if (error) {
+        console.error('Error fetching streaks:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (data) {
+        setStats({
+          currentStreak: data.current_streak,
+          longestStreak: data.longest_streak,
+          totalRelapses: data.total_relapses,
+          startDate: data.start_date,
+          xp: data.xp,
+          level: data.level,
+          dailyCheckIn: data.daily_check_in as UserStats['dailyCheckIn'],
+          completedTasks: data.completed_tasks || [],
+        });
+      }
+      setLoading(false);
+    };
+
+    fetchStats();
+  }, [user]);
+
+  const updateDb = useCallback(async (updates: Record<string, any>) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from('streaks')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('user_id', user.id);
+    if (error) {
+      console.error('Error updating streaks:', error);
+      toast({ title: 'Error', description: 'Failed to save progress.', variant: 'destructive' });
+    }
+  }, [user, toast]);
+
+  const resetStreak = useCallback(async () => {
+    const newRelapses = stats.totalRelapses + 1;
+    setStats(prev => ({ ...prev, currentStreak: 0, totalRelapses: newRelapses }));
+    await updateDb({ current_streak: 0, total_relapses: newRelapses });
+
+    // Log relapse
+    if (user) {
+      await supabase.from('relapse_logs').insert({
+        user_id: user.id,
+        trigger: 'manual_reset',
+        emotion: 'unknown',
+      });
+    }
+  }, [stats.totalRelapses, updateDb, user]);
+
+  const completeTask = useCallback(async (taskId: string) => {
+    const newTasks = [...stats.completedTasks, taskId];
+    const newXp = stats.xp + 25;
+    const newLevel = Math.floor(newXp / 200) + 1;
+    setStats(prev => ({ ...prev, completedTasks: newTasks, xp: newXp, level: newLevel }));
+    await updateDb({ completed_tasks: newTasks, xp: newXp, level: newLevel });
+  }, [stats.completedTasks, stats.xp, updateDb]);
+
+  const setDailyCheckIn = useCallback(async (mood: 'strong' | 'neutral' | 'struggling') => {
     setStats(prev => ({ ...prev, dailyCheckIn: mood }));
-  }, []);
+    await updateDb({ daily_check_in: mood });
+  }, [updateDb]);
 
-  return { stats, resetStreak, completeTask, setDailyCheckIn };
+  return { stats, loading, resetStreak, completeTask, setDailyCheckIn };
 }
 
 export const MILESTONES = [
