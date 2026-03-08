@@ -51,10 +51,10 @@ export default function Landing() {
             to help you break free from compulsive habits and reclaim your discipline.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg px-8 py-6 glow-primary" onClick={() => navigate('/dashboard')}>
+            <Button size="lg" className="text-lg px-8 py-6 glow-primary" onClick={() => navigate('/auth')}>
               Start Your Journey
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/dashboard')}>
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/auth')}>
               Learn More
             </Button>
           </div>
