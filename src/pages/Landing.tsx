@@ -110,7 +110,7 @@ export default function Landing() {
           <p className="text-muted-foreground mb-8 max-w-md mx-auto">
             Join thousands of men who have taken control of their minds and lives.
           </p>
-          <Button size="lg" className="text-lg px-10 py-6" onClick={() => navigate('/dashboard')}>
+          <Button size="lg" className="text-lg px-10 py-6" onClick={() => navigate('/auth')}>
             Start Your Discipline Journey
           </Button>
         </div>
