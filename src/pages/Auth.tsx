@@ -10,6 +10,7 @@ import { lovable } from '@/integrations/lovable/index';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
+import { loginSchema, signupSchema, forgotPasswordSchema } from '@/lib/validations';
 
 export default function Auth() {
   const { user, loading } = useAuth();
@@ -21,6 +22,7 @@ export default function Auth() {
   const [username, setUsername] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   if (loading) {
     return (
@@ -36,6 +38,27 @@ export default function Auth() {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrors({});
+
+    // Validate with Zod
+    let validation;
+    if (mode === 'forgot') {
+      validation = forgotPasswordSchema.safeParse({ email });
+    } else if (mode === 'signup') {
+      validation = signupSchema.safeParse({ email, password, username });
+    } else {
+      validation = loginSchema.safeParse({ email, password });
+    }
+
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.errors.forEach(err => {
+        if (err.path[0]) fieldErrors[err.path[0] as string] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -100,7 +123,7 @@ export default function Auth() {
           {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Start Your Journey' : 'Reset Password'}
         </h2>
 
-        <form onSubmit={handleEmailAuth} className="space-y-4">
+        <form onSubmit={handleEmailAuth} className="space-y-4" noValidate>
           {mode === 'signup' && (
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
@@ -112,9 +135,11 @@ export default function Auth() {
                   value={username}
                   onChange={e => setUsername(e.target.value)}
                   className="pl-10"
-                  required
+                  maxLength={30}
+                  aria-describedby={errors.username ? 'username-error' : undefined}
                 />
               </div>
+              {errors.username && <p id="username-error" className="text-xs text-destructive">{errors.username}</p>}
             </div>
           )}
 
@@ -129,9 +154,11 @@ export default function Auth() {
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 className="pl-10"
-                required
+                maxLength={255}
+                aria-describedby={errors.email ? 'email-error' : undefined}
               />
             </div>
+            {errors.email && <p id="email-error" className="text-xs text-destructive">{errors.email}</p>}
           </div>
 
           {mode !== 'forgot' && (
@@ -146,17 +173,19 @@ export default function Auth() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   className="pl-10 pr-10"
-                  required
-                  minLength={6}
+                  maxLength={128}
+                  aria-describedby={errors.password ? 'password-error' : undefined}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p id="password-error" className="text-xs text-destructive">{errors.password}</p>}
             </div>
           )}
 
@@ -167,7 +196,7 @@ export default function Auth() {
 
         {mode === 'login' && (
           <button
-            onClick={() => setMode('forgot')}
+            onClick={() => { setMode('forgot'); setErrors({}); }}
             className="text-sm text-muted-foreground hover:text-primary mt-3 block text-center w-full"
           >
             Forgot password?
@@ -197,11 +226,11 @@ export default function Auth() {
         <p className="text-sm text-center text-muted-foreground mt-6">
           {mode === 'login' ? (
             <>Don't have an account?{' '}
-              <button onClick={() => setMode('signup')} className="text-primary hover:underline">Sign up</button>
+              <button onClick={() => { setMode('signup'); setErrors({}); }} className="text-primary hover:underline">Sign up</button>
             </>
           ) : (
             <>Already have an account?{' '}
-              <button onClick={() => setMode('login')} className="text-primary hover:underline">Sign in</button>
+              <button onClick={() => { setMode('login'); setErrors({}); }} className="text-primary hover:underline">Sign in</button>
             </>
           )}
         </p>

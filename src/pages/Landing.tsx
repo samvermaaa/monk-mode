@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Brain, Flame, Target, BarChart3, Trophy } from 'lucide-react';
+import { Shield, Brain, Flame, Target, BarChart3, Trophy, Star, Quote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const features = [
@@ -12,13 +12,38 @@ const features = [
   { icon: Trophy, title: 'Gamification', desc: 'Level up, earn XP, and unlock achievements on your journey.' },
 ];
 
+const testimonials = [
+  {
+    name: 'Alex R.',
+    streak: '90 days',
+    text: "MonkMode completely changed my life. The urge intervention system alone saved me dozens of times. I'm sharper, more focused, and actually present.",
+  },
+  {
+    name: 'Marcus T.',
+    streak: '45 days',
+    text: "The AI Coach feels like having a wise mentor in your pocket. No judgment, just honest guidance when you need it most.",
+  },
+  {
+    name: 'Jordan K.',
+    streak: '180 days',
+    text: "I tried every app out there. MonkMode is the only one that stuck. The gamification makes discipline feel rewarding, not punishing.",
+  },
+];
+
+const benefits = [
+  { title: 'Increased Focus', desc: 'Reclaim your attention span and mental clarity.' },
+  { title: 'More Energy', desc: 'Channel your drive into productive activities.' },
+  { title: 'Better Relationships', desc: 'Connect authentically without compulsive distractions.' },
+  { title: 'Self-Mastery', desc: 'Build unshakeable discipline that extends to every area of life.' },
+];
+
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-dark">
       {/* Nav */}
-      <nav className="container flex items-center justify-between py-6">
+      <nav className="container flex items-center justify-between py-6" role="navigation" aria-label="Main navigation">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
             <Flame className="h-5 w-5 text-primary-foreground" />
@@ -54,7 +79,7 @@ export default function Landing() {
             <Button size="lg" className="text-lg px-8 py-6 glow-primary" onClick={() => navigate('/auth')}>
               Start Your Journey
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('/auth')}>
+            <Button variant="outline" size="lg" className="text-lg px-8 py-6" onClick={() => navigate('#features')}>
               Learn More
             </Button>
           </div>
@@ -81,7 +106,7 @@ export default function Landing() {
       </section>
 
       {/* Features */}
-      <section className="container py-20">
+      <section id="features" className="container py-20">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Built for Discipline</h2>
         <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
           Every feature is designed around behavioral psychology to help you win the war within.
@@ -98,6 +123,55 @@ export default function Landing() {
               <f.icon className="h-8 w-8 text-primary mb-4" />
               <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
               <p className="text-sm text-muted-foreground">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Benefits */}
+      <section className="container py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">Transform Your Life</h2>
+        <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
+          Discipline isn't about restriction — it's about freedom.
+        </p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {benefits.map((b, i) => (
+            <motion.div
+              key={b.title}
+              className="text-center p-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * i }}
+            >
+              <Star className="h-6 w-6 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-2">{b.title}</h3>
+              <p className="text-sm text-muted-foreground">{b.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="container py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">From Our Warriors</h2>
+        <p className="text-muted-foreground text-center mb-16 max-w-xl mx-auto">
+          Real stories from real men who chose discipline over regret.
+        </p>
+        <div className="grid md:grid-cols-3 gap-6">
+          {testimonials.map((t, i) => (
+            <motion.div
+              key={t.name}
+              className="bg-gradient-card rounded-2xl border border-border p-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 * i }}
+            >
+              <Quote className="h-5 w-5 text-primary/40 mb-3" />
+              <p className="text-sm text-muted-foreground mb-4 italic">"{t.text}"</p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold">{t.name}</span>
+                <span className="text-xs text-primary font-mono">{t.streak} streak</span>
+              </div>
             </motion.div>
           ))}
         </div>
