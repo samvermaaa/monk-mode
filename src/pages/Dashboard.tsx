@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame } from 'lucide-react';
+import { Flame, User } from 'lucide-react';
 import StreakCard from '@/components/StreakCard';
 import UrgeButton from '@/components/UrgeButton';
 import DailyCheckIn from '@/components/DailyCheckIn';
@@ -39,10 +39,11 @@ export default function Dashboard() {
           <span className="text-lg font-bold">MonkMode</span>
         </div>
         <button
-          onClick={async () => { await signOut(); navigate('/'); }}
-          className="text-muted-foreground hover:text-foreground text-xs"
+          onClick={() => navigate('/profile')}
+          className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
+          aria-label="Profile"
         >
-          Sign Out
+          <User className="h-4 w-4 text-muted-foreground" />
         </button>
       </div>
 
