@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame, Trophy, BarChart3, MessageCircle, User } from 'lucide-react';
+import { Flame } from 'lucide-react';
 import StreakCard from '@/components/StreakCard';
 import UrgeButton from '@/components/UrgeButton';
 import DailyCheckIn from '@/components/DailyCheckIn';
 import DopamineTasks from '@/components/DopamineTasks';
 import XPBar from '@/components/XPBar';
 import UrgeIntervention from '@/components/UrgeIntervention';
+import BottomNav from '@/components/BottomNav';
 import { useUserStats } from '@/lib/store';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -30,7 +31,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-dark pb-24">
-      {/* Header */}
       <div className="container py-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
@@ -48,7 +48,6 @@ export default function Dashboard() {
 
       <div className="container space-y-6">
         <XPBar xp={stats.xp} level={stats.level} />
-
         <StreakCard
           currentStreak={stats.currentStreak}
           longestStreak={stats.longestStreak}
@@ -56,36 +55,12 @@ export default function Dashboard() {
           startDate={stats.startDate}
           onReset={resetStreak}
         />
-
         <UrgeButton onPress={() => setShowUrge(true)} />
-
         <DailyCheckIn currentMood={stats.dailyCheckIn} onSelect={setDailyCheckIn} />
-
         <DopamineTasks completedTasks={stats.completedTasks} onComplete={completeTask} />
       </div>
 
-      {/* Bottom Nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-card/90 backdrop-blur-lg border-t border-border">
-        <div className="container flex justify-around py-3">
-          {[
-            { icon: Flame, label: 'Dashboard', path: '/dashboard' },
-            { icon: Trophy, label: 'Badges', path: '/achievements' },
-            { icon: BarChart3, label: 'Analytics', path: '/analytics' },
-            { icon: MessageCircle, label: 'AI Coach', path: '/coach' },
-          ].map(item => (
-            <button
-              key={item.label}
-              onClick={() => navigate(item.path)}
-              className={`flex flex-col items-center gap-1 text-xs ${
-                item.path === '/dashboard' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </nav>
+      <BottomNav />
     </div>
   );
 }

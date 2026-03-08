@@ -31,7 +31,6 @@ export function useUserStats() {
   const [stats, setStats] = useState<UserStats>(DEFAULT_STATS);
   const [loading, setLoading] = useState(true);
 
-  // Fetch streak data from DB
   useEffect(() => {
     if (!user) return;
 
@@ -49,6 +48,15 @@ export function useUserStats() {
       }
 
       if (data) {
+        // Check today's checkin
+        const today = new Date().toISOString().split('T')[0];
+        const { data: checkin } = await supabase
+          .from('daily_checkins')
+          .select('mood')
+          .eq('user_id', user.id)
+          .eq('checkin_date', today)
+          .maybeSingle();
+
         setStats({
           currentStreak: data.current_streak,
           longestStreak: data.longest_streak,
@@ -56,7 +64,7 @@ export function useUserStats() {
           startDate: data.start_date,
           xp: data.xp,
           level: data.level,
-          dailyCheckIn: data.daily_check_in as UserStats['dailyCheckIn'],
+          dailyCheckIn: (checkin?.mood as UserStats['dailyCheckIn']) ?? (data.daily_check_in as UserStats['dailyCheckIn']),
           completedTasks: data.completed_tasks || [],
         });
       }
@@ -83,7 +91,6 @@ export function useUserStats() {
     setStats(prev => ({ ...prev, currentStreak: 0, totalRelapses: newRelapses }));
     await updateDb({ current_streak: 0, total_relapses: newRelapses });
 
-    // Log relapse
     if (user) {
       await supabase.from('relapse_logs').insert({
         user_id: user.id,
@@ -102,9 +109,19 @@ export function useUserStats() {
   }, [stats.completedTasks, stats.xp, updateDb]);
 
   const setDailyCheckIn = useCallback(async (mood: 'strong' | 'neutral' | 'struggling') => {
+    if (!user) return;
     setStats(prev => ({ ...prev, dailyCheckIn: mood }));
     await updateDb({ daily_check_in: mood });
-  }, [updateDb]);
+
+    // Also save to daily_checkins history
+    const today = new Date().toISOString().split('T')[0];
+    await supabase
+      .from('daily_checkins')
+      .upsert(
+        { user_id: user.id, mood, checkin_date: today },
+        { onConflict: 'user_id,checkin_date' }
+      );
+  }, [updateDb, user]);
 
   return { stats, loading, resetStreak, completeTask, setDailyCheckIn };
 }
